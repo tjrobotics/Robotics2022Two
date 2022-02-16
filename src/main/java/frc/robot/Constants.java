@@ -12,4 +12,11 @@ package frc.robot;
  * <p>It is advised to statically import this class (or one of its inner classes) wherever the
  * constants are needed, to reduce verbosity.
  */
-public final class Constants {}
+public final class Constants {
+
+    public static final int servo_up_angle = 160;
+    public static final int servo_shooting_angle = 40;
+    public static final int servo_down_angle = 0;
+    public static final int pressureMin = 80;
+    public static final int pressureMax = 120;
+}

@@ -15,6 +15,8 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
+import java.rmi.registry.RegistryHandler;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 /**
@@ -27,21 +29,33 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
-  CANSparkMax motor_3;
-  CANSparkMax motor_4;
-  CANSparkMax motor_1;
-  CANSparkMax motor_6;
-  CANSparkMax motor_2;
-  XboxController gamepad;
-  Servo servo1;
+  CANSparkMax Left_Back_Motor;
+  CANSparkMax Left_Front_Motor;
+  CANSparkMax Right_Back_Motor;
+  CANSparkMax Right_Front_Motor;
+  CANSparkMax Conveyer_Motor;
+  CANSparkMax Input_Motor;
+  XboxController controller;
+  Servo shooting_servo;
   PneumaticsModuleType ourType = PneumaticsModuleType.CTREPCM;
   Compressor compressor;
-  DoubleSolenoid piston;
-  DoubleSolenoid piston_1;
-  //SpeedControllerGroup leftMotors = null;
-  //SpeedControllerGroup rightMotors = null;
+  DoubleSolenoid Shooting_Piston;
+  DoubleSolenoid Input_Piston;
+  //SpeedControllers
+  SpeedControllerGroup leftMotors = new SpeedControllerGroup(Left_Back_Motor, Left_Front_Motor);
+  SpeedControllerGroup rightMotors = new SpeedControllerGroup(Right_Back_Motor, Right_Front_Motor);
+  
+  //DriveTrain
+  DifferentialDrive differentialDrive = new DifferentialDrive(leftMotors, rightMotors);
 
-  DifferentialDrive differentialDrive;
+  //Controller Buttons
+  int A_Button = 1;
+  int B_Button = 2;
+  int X_Button = 3;
+  int Y_Button = 4;
+  int LB_Button = 5;
+  int RB_Button = 6;
+  int Back_Button = 7;
 
 
   /**
@@ -53,36 +67,35 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-    gamepad = new XboxController(0);
-    /*motor_6 = new CANSparkMax(6, MotorType.kBrushless);
-    motor_4 = new CANSparkMax(4, MotorType.kBrushed);
-    motor_3 = new CANSparkMax(3, MotorType.kBrushed);
-    motor_2 = new CANSparkMax(2, MotorType.kBrushed);
-    motor_1 = new CANSparkMax(1, MotorType.kBrushed);*/
+    controller = new XboxController(0);
+    
+    //Change Motor ID HERE
+    Left_Back_Motor = new CANSparkMax(6, MotorType.kBrushless);
+    Left_Front_Motor = new CANSparkMax(4, MotorType.kBrushed);
+    Right_Back_Motor = new CANSparkMax(3, MotorType.kBrushed);
+    Right_Front_Motor = new CANSparkMax(2, MotorType.kBrushed);
+    Conveyer_Motor = new CANSparkMax(1, MotorType.kBrushed);
+    Input_Motor = new CANSparkMax(5, MotorType.kBrushed);
+
 
     compressor = new Compressor(0, ourType);
-    //piston = new DoubleSolenoid(ourType, 0,1);
-    piston_1 = new DoubleSolenoid(ourType, 0,1);
-
-    //compressor.enableAnalog(80, 120);
-    //compressor.enableDigital();
+    Shooting_Piston = new DoubleSolenoid(ourType, 0,1);
+    Input_Piston = new DoubleSolenoid(ourType, 2,3);
 
 
-    /*motor_3.restoreFactoryDefaults();
-    motor_4.restoreFactoryDefaults();
-    motor_1.restoreFactoryDefaults();
-    motor_2.restoreFactoryDefaults();*/
-    servo1 = new Servo(0);
-    gamepad = new XboxController(0);
 
+    Left_Back_Motor.restoreFactoryDefaults();
+    Left_Front_Motor.restoreFactoryDefaults();
+    Right_Back_Motor.restoreFactoryDefaults();
+    Right_Front_Motor.restoreFactoryDefaults();
+    Input_Motor.restoreFactoryDefaults();
+    Conveyer_Motor.restoreFactoryDefaults();
+    shooting_servo = new Servo(0);
     //leftMotors = new SpeedControllerGroup(motor_2, motor_3);
     //rightMotors = new SpeedControllerGroup(motor_3, motor_4);
 
     //differentialDrive = new DifferentialDrive(leftMotors, rightMotors);
 
-    //compressor = new Compressor(0, ourType);
-    //piston = new DoubleSolenoid(ourType, 0,1);
-    //piston_1 = new DoubleSolenoid(ourType, 0,1);
 
   }
 
@@ -110,34 +123,34 @@ public class Robot extends TimedRobot {
     //motor_1.set(gamepad.getLeftX());
 
     //motor_4.set(gamepad.getLeftX());
-    if(compressor.getPressure()> 119) {
+    if(compressor.getPressure()> Constants.pressureMax-1) {
       compressor.disable();
     }
-    if (gamepad.getRawButton(1)) {
-      //motor_4.set(0.8);
-      piston_1.set(DoubleSolenoid.Value.kForward);
+    if (controller.getRawButton(A_Button)) {
+      Shooting_Piston.set(DoubleSolenoid.Value.kForward);
     }
-    if (gamepad.getRawButton(2)) {
-      //motor_4.set(0);
-      piston_1.set(DoubleSolenoid.Value.kReverse);
-      //servo1.set(1);
+    if (controller.getRawButton(B_Button)) {
+      Shooting_Piston.set(DoubleSolenoid.Value.kReverse);
     }
-    if (gamepad.getRawButton(3)) {
-      //motor_4.set(0);
+    if (controller.getRawButton(X_Button)) {
       compressor.enableDigital();
-
     }
-    if (gamepad.getRawButton(4)) {
-      //motor_4.set(0);
+    if (controller.getRawButton(Y_Button)) {
       compressor.disable();
     }
-    if (gamepad.getRawButton(5)) {
-      //motor_4.set(0);
-      servo1.setAngle(160);
+    if (controller.getRawButton(LB_Button)) {
+      shooting_servo.setAngle(Constants.servo_up_angle);
     }
-    if (gamepad.getRawButton(6)) {
-      //motor_4.set(0);
-      servo1.setAngle(40);
+    if (controller.getRawButton(RB_Button)) {
+      shooting_servo.setAngle(Constants.servo_down_angle);
+    }
+    if (controller.getRawButton(Back_Button)) {
+      shooting_servo.setAngle(Constants.servo_shooting_angle);
+    }
+    if (controller.getLeftTriggerAxis()>0) {
+      Input_Motor.set(1);
+    } else {
+      Input_Motor.set(0);
     }
   }
 
@@ -176,7 +189,10 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+
+    differentialDrive.arcadeDrive(controller.getLeftY(), controller.getLeftX());
+  }
 
   @Override
   public void testInit() {
