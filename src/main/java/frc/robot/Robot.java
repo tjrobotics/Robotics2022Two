@@ -8,14 +8,12 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Servo;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
-import java.rmi.registry.RegistryHandler;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -37,16 +35,14 @@ public class Robot extends TimedRobot {
   CANSparkMax Input_Motor;
   XboxController controller;
   Servo shooting_servo;
+  Servo shooting_servo_2;
   PneumaticsModuleType ourType = PneumaticsModuleType.CTREPCM;
   Compressor compressor;
   DoubleSolenoid Shooting_Piston;
   DoubleSolenoid Input_Piston;
   //SpeedControllers
-  SpeedControllerGroup leftMotors = new SpeedControllerGroup(Left_Back_Motor, Left_Front_Motor);
-  SpeedControllerGroup rightMotors = new SpeedControllerGroup(Right_Back_Motor, Right_Front_Motor);
-  
-  //DriveTrain
-  DifferentialDrive differentialDrive = new DifferentialDrive(leftMotors, rightMotors);
+
+
 
   //Controller Buttons
   int A_Button = 1;
@@ -91,10 +87,7 @@ public class Robot extends TimedRobot {
     Input_Motor.restoreFactoryDefaults();
     Conveyer_Motor.restoreFactoryDefaults();
     shooting_servo = new Servo(0);
-    //leftMotors = new SpeedControllerGroup(motor_2, motor_3);
-    //rightMotors = new SpeedControllerGroup(motor_3, motor_4);
-
-    //differentialDrive = new DifferentialDrive(leftMotors, rightMotors);
+    shooting_servo_2 = new Servo(1);
 
 
   }
@@ -113,16 +106,11 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-    /*if(gamepad.getRawButton(1)) {
-      servo1.setAngle(160);
-    }
-    if(gamepad.getRawButton(2)) {
-      servo1.setAngle(0);
-    }*/
-    //motor_3.set(gamepad.getLeftY());
-    //motor_1.set(gamepad.getLeftX());
-
-    //motor_4.set(gamepad.getLeftX());
+    var speed = 10;
+    Left_Back_Motor.set(controller.getLeftY()*speed);
+    Left_Front_Motor.set(controller.getLeftY()*speed);
+    Right_Back_Motor.set(controller.getLeftY()*speed);
+    Right_Front_Motor.set(controller.getLeftY()*speed);
     if(compressor.getPressure()> Constants.pressureMax-1) {
       compressor.disable();
     }
@@ -140,15 +128,18 @@ public class Robot extends TimedRobot {
     }
     if (controller.getRawButton(LB_Button)) {
       shooting_servo.setAngle(Constants.servo_up_angle);
+      shooting_servo_2.setAngle(Constants.servo_up_angle);
     }
     if (controller.getRawButton(RB_Button)) {
       shooting_servo.setAngle(Constants.servo_down_angle);
+      shooting_servo_2.setAngle(Constants.servo_down_angle);
     }
     if (controller.getRawButton(Back_Button)) {
       shooting_servo.setAngle(Constants.servo_shooting_angle);
+      shooting_servo_2.setAngle(Constants.servo_shooting_angle);
     }
     if (controller.getLeftTriggerAxis()>0) {
-      Input_Motor.set(1);
+      Input_Motor.set(10);
     } else {
       Input_Motor.set(0);
     }
@@ -189,10 +180,7 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {
-
-    differentialDrive.arcadeDrive(controller.getLeftY(), controller.getLeftX());
-  }
+  public void teleopPeriodic() {  }
 
   @Override
   public void testInit() {
