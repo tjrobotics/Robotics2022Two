@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -38,7 +39,8 @@ public class Robot extends TimedRobot {
   Compressor compressor;
   DoubleSolenoid Shooting_Piston;
   DoubleSolenoid Input_Piston;
-  //SpeedControllers
+
+  boolean driftMode = false;
 
   //Controller Buttons
   int A_Button = 1;
@@ -48,6 +50,7 @@ public class Robot extends TimedRobot {
   int LB_Button = 5;
   int RB_Button = 6;
   int Back_Button = 7;
+  int Start_Button = 8;
 
 
   /**
@@ -95,18 +98,49 @@ public class Robot extends TimedRobot {
    * <p>This runs after the mode specific periodic functions, but before LiveWindow and
    * SmartDashboard integrated updating.
    */
+  public void driveForward(double speed)  {
+    Left_Back_Motor.set(speed);
+    Left_Front_Motor.set(speed);
+    Right_Back_Motor.set(speed);
+    Right_Front_Motor.set(speed);
+  }
+  public void turnRobot(double speed) {
+    if (speed<0) {
+      Right_Back_Motor.set(Math.abs(speed));
+      Right_Front_Motor.set(Math.abs(speed));
+    } else {
+      Left_Back_Motor.set(speed);
+      Left_Front_Motor.set(speed);
+    }
+    
+    
+  }
+
   @Override
   public void robotPeriodic() {
-    // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
-    // commands, running already-scheduled commands, removing finished or interrupted commands,
-    // and running subsystem periodic() methods.  This must be called from the robot's periodic
-    // block in order for anything in the Command-based framework to work.
+
     CommandScheduler.getInstance().run();
+    //driving forward and backward
     var speed = 10;
-    Left_Back_Motor.set(controller.getLeftY()*speed);
-    Left_Front_Motor.set(controller.getLeftY()*speed);
-    Right_Back_Motor.set(controller.getLeftY()*speed);
-    Right_Front_Motor.set(controller.getLeftY()*speed);
+    if (controller.getLeftY() < Constants.joystickTolerance*-1 || controller.getLeftY() > Constants.joystickTolerance) {
+      driveForward(controller.getLeftY()*speed);
+    }
+    if (controller.getRightX() < Constants.joystickTolerance*-1 || controller.getRightX() > Constants.joystickTolerance) {
+      turnRobot(controller.getRightX()*speed);
+    }
+  
+    if (driftMode) {
+      Left_Back_Motor.setIdleMode(IdleMode.kCoast);
+      Left_Front_Motor.setIdleMode(IdleMode.kCoast);
+      Right_Back_Motor.setIdleMode(IdleMode.kCoast);
+      Right_Front_Motor.setIdleMode(IdleMode.kCoast);
+    } else {
+      Left_Back_Motor.setIdleMode(IdleMode.kBrake);
+      Left_Front_Motor.setIdleMode(IdleMode.kBrake);
+      Right_Back_Motor.setIdleMode(IdleMode.kBrake);
+      Right_Front_Motor.setIdleMode(IdleMode.kBrake);
+    }
+    
     if(compressor.getPressure()> Constants.pressureMax-1) {
       compressor.disable();
     }
@@ -138,6 +172,9 @@ public class Robot extends TimedRobot {
       Input_Motor.set(10);
     } else {
       Input_Motor.set(0);
+    }
+    if (controller.getRawButton(Start_Button)) {
+      driftMode = !driftMode;
     }
   }
 
