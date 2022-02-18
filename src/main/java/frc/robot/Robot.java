@@ -8,16 +8,13 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Servo;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
-import java.rmi.registry.RegistryHandler;
-
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -42,12 +39,9 @@ public class Robot extends TimedRobot {
   Compressor compressor;
   DoubleSolenoid Shooting_Piston;
   DoubleSolenoid Input_Piston;
-  //SpeedControllers
-  //SpeedControllerGroup leftMotors;
-  //SpeedControllerGroup rightMotors;
-  
-  //DriveTrain
-  //DifferentialDrive differentialDrive;
+
+  boolean driftMode = true;
+
   //Controller Buttons
   int A_Button = 1;
   int B_Button = 2;
@@ -56,6 +50,7 @@ public class Robot extends TimedRobot {
   int LB_Button = 5;
   int RB_Button = 6;
   int Back_Button = 7;
+  int Start_Button = 8;
 
 
   /**
@@ -96,11 +91,6 @@ public class Robot extends TimedRobot {
     shooting_servo_2 = new Servo(1);
 
 
-    //DifferentialDrive differentialDrive = new DifferentialDrive(leftMotors, rightMotors);
-
-    //leftMotors = new SpeedControllerGroup(motor_2, motor_3);
-    //rightMotors = new SpeedControllerGroup(motor_3, motor_4);
-
   }
 
   /**
@@ -110,26 +100,52 @@ public class Robot extends TimedRobot {
    * <p>This runs after the mode specific periodic functions, but before LiveWindow and
    * SmartDashboard integrated updating.
    */
+  public void driveForward(double speed)  {
+    Left_Back_Motor.set(speed);
+    Left_Front_Motor.set(speed);
+    Right_Back_Motor.set(speed);
+    Right_Front_Motor.set(speed);
+  }
+  public void turnRobot(double speed) {
+    if (speed<0) {
+      Right_Back_Motor.set(Math.abs(speed));
+      Right_Front_Motor.set(Math.abs(speed));
+    } else {
+      Left_Back_Motor.set(speed);
+      Left_Front_Motor.set(speed);
+    }
+    
+    
+  }
+
   @Override
   public void robotPeriodic() {
-    // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
-    // commands, running already-scheduled commands, removing finished or interrupted commands,
-    // and running subsystem periodic() methods.  This must be called from the robot's periodic
-    // block in order for anything in the Command-based framework to work.
+
+
     CommandScheduler.getInstance().run();
-    /*if(gamepad.getRawButton(1)) {
-      servo1.setAngle(160);
+    //driving forward and backward
+    var speed = 10;
+    if (controller.getLeftY() < Constants.joystickTolerance*-1 || controller.getLeftY() > Constants.joystickTolerance) {
+      driveForward(controller.getLeftY()*speed);
+    } else if(controller.getRightX() < Constants.joystickTolerance*-1 || controller.getRightX() > Constants.joystickTolerance) {
+      turnRobot(controller.getRightX()*speed);
+    } else {
+      driveForward(0);
     }
-    if(gamepad.getRawButton(2)) {
-      servo1.setAngle(0);
-    }*/
-    int speed = 10;
-    Left_Back_Motor.set(controller.getLeftX()*speed);
-    Left_Front_Motor.set(controller.getLeftX()*speed);
-
-    Right_Back_Motor.set(controller.getLeftX()*speed);
-    Right_Front_Motor.set(controller.getLeftX()*speed);
-
+   
+  
+    if (driftMode) {
+      Left_Back_Motor.setIdleMode(IdleMode.kCoast);
+      Left_Front_Motor.setIdleMode(IdleMode.kCoast);
+      Right_Back_Motor.setIdleMode(IdleMode.kCoast);
+      Right_Front_Motor.setIdleMode(IdleMode.kCoast);
+    } else {
+      Left_Back_Motor.setIdleMode(IdleMode.kBrake);
+      Left_Front_Motor.setIdleMode(IdleMode.kBrake);
+      Right_Back_Motor.setIdleMode(IdleMode.kBrake);
+      Right_Front_Motor.setIdleMode(IdleMode.kBrake);
+    }
+    
     if(compressor.getPressure()> Constants.pressureMax-1) {
       compressor.disable();
     }
@@ -146,23 +162,30 @@ public class Robot extends TimedRobot {
       compressor.disable();
     }
     if (controller.getRawButton(LB_Button)) {
-      shooting_servo.setAngle(Constants.servo_up_angle_2);
-      shooting_servo_2.setAngle(Constants.servo_up_angle);
+      shooting_servo.setAngle(Constants.servo_up_angle);
+      shooting_servo_2.setAngle(180-Constants.servo_up_angle);
     }
     if (controller.getRawButton(RB_Button)) {
-      shooting_servo.setAngle(Constants.servo_down_angle_2);
-      shooting_servo_2.setAngle(Constants.servo_down_angle);
+      shooting_servo.setAngle(Constants.servo_down_angle);
+      shooting_servo_2.setAngle(180-Constants.servo_down_angle);
     }
     if (controller.getRawButton(Back_Button)) {
-      shooting_servo.setAngle(Constants.servo_shooting_angle_2);
-      shooting_servo_2.setAngle(Constants.servo_shooting_angle);
+      shooting_servo.setAngle(Constants.servo_shooting_angle);
+      shooting_servo_2.setAngle(180-Constants.servo_shooting_angle);
     }
     if (controller.getLeftTriggerAxis()>0) {
-      Input_Motor.set(30);
+      Input_Motor.set(10);
+      Conveyer_Motor.set(10);
     } else {
       Input_Motor.set(0);
+      Conveyer_Motor.set(0);
     }
-  }
+      
+    }
+    /*if (controller.getRawButton(Start_Button)) {
+      driftMode = !driftMode;
+    }*/
+  
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
@@ -201,9 +224,7 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {
-    //differentialDrive.arcadeDrive(controller.getRawAxis(0), controller.getRawAxis(1));
-  }
+  public void teleopPeriodic() {  }
 
   @Override
   public void testInit() {
