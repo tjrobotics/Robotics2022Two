@@ -63,6 +63,8 @@ public class Robot extends TimedRobot {
   int Start_Button = 8;
 
 
+  //input piston up boolean
+  boolean inputPistonUp = false;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -79,7 +81,7 @@ public class Robot extends TimedRobot {
     controller = new XboxController(0);
     
     //Change Motor ID HERE
-    Left_Back_Motor = new CANSparkMax(1, MotorType.kBrushless);
+    Left_Back_Motor = new CANSparkMax(1, MotorType.kBrushed);
     Left_Front_Motor = new CANSparkMax(5, MotorType.kBrushed);
     Right_Back_Motor = new CANSparkMax(3, MotorType.kBrushed);
     Right_Front_Motor = new CANSparkMax(4, MotorType.kBrushed);
@@ -205,9 +207,17 @@ public class Robot extends TimedRobot {
       shooting_servo.setAngle(Constants.servo_shooting_angle);
       shooting_servo_2.setAngle(180-Constants.servo_shooting_angle);
     }
+    if (controller.getRawButton(Start_Button)) {
+      if (inputPistonUp) {
+        Input_Piston.set(DoubleSolenoid.Value.kReverse);
+      } else {
+        Input_Piston.set(DoubleSolenoid.Value.kForward);
+      }
+      inputPistonUp = !inputPistonUp;
+    }
     if (controller.getLeftTriggerAxis()>0) {
       Input_Motor.set(10);
-      Conveyer_Motor.set(10);
+      Conveyer_Motor.set(15);
     } else {
       Input_Motor.set(0);
       Conveyer_Motor.set(0);
