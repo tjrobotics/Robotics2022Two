@@ -108,7 +108,8 @@ public class Robot extends TimedRobot {
     Input_Motor.restoreFactoryDefaults();
     Conveyer_Motor.restoreFactoryDefaults();
     
-
+    //lower input piston
+    Input_Piston.set(DoubleSolenoid.Value.kForward);
 
   }
 
@@ -126,12 +127,12 @@ public class Robot extends TimedRobot {
   }
   //turning on a dime
   public void turnRobot(double speed) {
-    if (speed<0) {
-      Right_Front_Motor.set(Math.abs(speed));
-      Left_Front_Motor.set(speed);
+    if (speed>0) {
+      Right_Front_Motor.set(speed);
+      Left_Front_Motor.set(speed*-1);
     } else {
-      Left_Front_Motor.set(speed);
-      Right_Front_Motor.set(speed*-1);
+      Left_Front_Motor.set(speed*-1);
+      Right_Front_Motor.set(speed);
     }
     
     
@@ -211,12 +212,8 @@ public class Robot extends TimedRobot {
       shooting_servo_2.setAngle(180-Constants.servo_shooting_angle);
     }
     if (controller.getRawButton(Start_Button)) {
-      if (inputPistonUp) {
-        Input_Piston.set(DoubleSolenoid.Value.kReverse);
-      } else {
-        Input_Piston.set(DoubleSolenoid.Value.kForward);
-      }
-      inputPistonUp = !inputPistonUp;
+      Input_Piston.set(DoubleSolenoid.Value.kReverse);
+
     }
     if (controller.getLeftTriggerAxis()>0) {
       Input_Motor.set(10);
@@ -234,7 +231,10 @@ public class Robot extends TimedRobot {
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    Input_Piston.set(DoubleSolenoid.Value.kForward);
+
+  }
 
   @Override
   public void disabledPeriodic() {}
@@ -251,9 +251,8 @@ public class Robot extends TimedRobot {
   }
 
   /** This function is called periodically during autonomous. */
-  @Override
-  public void autonomousPeriodic() {
-  }
+  //@Override
+  //public void autonomousPeriodic() {}
 
   @Override
   public void teleopInit() {
