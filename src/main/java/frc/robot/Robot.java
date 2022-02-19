@@ -63,7 +63,7 @@ public class Robot extends TimedRobot {
   int Start_Button = 8;
 
 
-  //input piston up boolean
+  //Input piston up boolean
   boolean inputPistonUp = false;
 
   /**
@@ -88,14 +88,18 @@ public class Robot extends TimedRobot {
     Conveyer_Motor = new CANSparkMax(2, MotorType.kBrushed);
     Input_Motor = new CANSparkMax(6, MotorType.kBrushed);
 
-
+    //pnuematics
     compressor = new Compressor(0, ourType);
     Shooting_Piston = new DoubleSolenoid(ourType, 0,1);
     Input_Piston = new DoubleSolenoid(ourType, 2,3);
 
-   //leftMotors = new SpeedControllerGroup(Left_Back_Motor, Left_Front_Motor);
-   //rightMotors = new SpeedControllerGroup(Right_Back_Motor, Right_Front_Motor);
+    //making following commands for wheels
+    Left_Back_Motor.follow(Left_Front_Motor);
+    Right_Back_Motor.follow(Right_Front_Motor);
 
+    //servos
+    shooting_servo = new Servo(0);
+    shooting_servo_2 = new Servo(1);
 
     Left_Back_Motor.restoreFactoryDefaults();
     Left_Front_Motor.restoreFactoryDefaults();
@@ -103,8 +107,7 @@ public class Robot extends TimedRobot {
     Right_Front_Motor.restoreFactoryDefaults();
     Input_Motor.restoreFactoryDefaults();
     Conveyer_Motor.restoreFactoryDefaults();
-    shooting_servo = new Servo(0);
-    shooting_servo_2 = new Servo(1);
+    
 
 
   }
@@ -116,19 +119,19 @@ public class Robot extends TimedRobot {
    * <p>This runs after the mode specific periodic functions, but before LiveWindow and
    * SmartDashboard integrated updating.
    */
-  public void driveForward(double speed)  {
-    Left_Back_Motor.set(speed);
+  //go forward and backward
+   public void driveForward(double speed)  {
     Left_Front_Motor.set(speed);
-    Right_Back_Motor.set(speed);
     Right_Front_Motor.set(speed);
   }
+  //turning on a dime
   public void turnRobot(double speed) {
     if (speed<0) {
-      Right_Back_Motor.set(Math.abs(speed));
       Right_Front_Motor.set(Math.abs(speed));
-    } else {
-      Left_Back_Motor.set(speed);
       Left_Front_Motor.set(speed);
+    } else {
+      Left_Front_Motor.set(speed);
+      Right_Front_Motor.set(speed*-1);
     }
     
     
@@ -140,7 +143,7 @@ public class Robot extends TimedRobot {
 
     CommandScheduler.getInstance().run();
     //driving forward and backward
-    var speed = 10;
+    var speed = 2;
     if (controller.getLeftY() < Constants.joystickTolerance*-1 || controller.getLeftY() > Constants.joystickTolerance) {
       driveForward(controller.getLeftY()*speed);
     } else if(controller.getRightX() < Constants.joystickTolerance*-1 || controller.getRightX() > Constants.joystickTolerance) {
@@ -250,7 +253,6 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    //differentialDrive.arcadeDrive(0,0);
   }
 
   @Override
