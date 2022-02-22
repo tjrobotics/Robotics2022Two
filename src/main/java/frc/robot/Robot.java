@@ -62,9 +62,9 @@ public class Robot extends TimedRobot {
   int Back_Button = 7;
   int Start_Button = 8;
 
+  //current robot speed
+  double currentRobotSpeed = 0;
 
-  //Input piston up boolean
-  boolean inputPistonUp = false;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -122,8 +122,20 @@ public class Robot extends TimedRobot {
    */
   //go forward and backward
    public void driveForward(double speed)  {
-    Left_Front_Motor.set(speed);
-    Right_Front_Motor.set(speed);
+    //normal forward drive with no turn
+    if (controller.getRightX() < Constants.joystickTolerance && controller.getRightX() > Constants.joystickTolerance*-1) {
+      Left_Front_Motor.set(speed);
+      Right_Front_Motor.set(speed);
+    } else {
+      //sets one side more than the other for moving turn
+      if (controller.getRightX() > Constants.joystickTolerance) {
+        Left_Front_Motor.set(speed);
+        Right_Front_Motor.set(0.2*speed);
+      } else {
+        Right_Front_Motor.set(speed);
+        Left_Back_Motor.set(0.2*speed);
+      }
+    }
   }
   //turning on a dime
   public void turnRobot(double speed) {
@@ -144,13 +156,24 @@ public class Robot extends TimedRobot {
 
     CommandScheduler.getInstance().run();
     //driving forward and backward
-    var speed = 2;
+    //left stick is forward and backward and dime turning
+    //right stick x axis is regular turning
+    //change the speed
+    double speed = 2;
+    //change the startup time increment
+    double increment = 5;
     if (controller.getLeftY() < Constants.joystickTolerance*-1 || controller.getLeftY() > Constants.joystickTolerance) {
-      driveForward(controller.getLeftY()*speed);
-    } else if(controller.getRightX() < Constants.joystickTolerance*-1 || controller.getRightX() > Constants.joystickTolerance) {
-      turnRobot(controller.getRightX()*speed);
+      //test if this if statement is accurate
+      if (currentRobotSpeed != speed) {
+        currentRobotSpeed += speed/increment;
+      }
+      driveForward(controller.getLeftY()*currentRobotSpeed);
+    } else if(controller.getLeftX() < Constants.joystickTolerance*-1 || controller.getLeftX() > Constants.joystickTolerance) {
+      turnRobot(controller.getLeftX()*speed);
+      currentRobotSpeed = 0;
     } else {
       driveForward(0);
+      currentRobotSpeed = 0;
     }
 
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
