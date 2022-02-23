@@ -161,7 +161,7 @@ public class Robot extends TimedRobot {
     //change the speed
     double speed = 2;
     //change the startup time increment
-    double increment = 5;
+    double increment = 15;
     if (controller.getLeftY() < Constants.joystickTolerance*-1 || controller.getLeftY() > Constants.joystickTolerance) {
       //test if this if statement is accurate
       if (currentRobotSpeed != speed) {
@@ -177,7 +177,8 @@ public class Robot extends TimedRobot {
     }
 
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-		NetworkTableEntry tx = table.getEntry("tx");
+    System.out.println(NetworkTableInstance.getDefault());
+    NetworkTableEntry tx = table.getEntry("tx");
 		NetworkTableEntry ty = table.getEntry("ty");
 		NetworkTableEntry ta = table.getEntry("ta");
 		
