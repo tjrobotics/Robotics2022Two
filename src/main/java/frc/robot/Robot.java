@@ -111,8 +111,16 @@ public class Robot extends TimedRobot {
     //lower input piston
     Input_Piston.set(DoubleSolenoid.Value.kForward);
     
-    //toggle variables here
+    //safeaccell/speedlimit (speedlimit is just old code)
+    //known as speed/increment in old functionality //double speedlimit=2;
+    double maxaccell=0.5;
+    double lspeed=0;
+    double rspeed=0;
+    boolean limitOrAccell=true; //true is safeaccell
+
+    //toggle button functionality variables here
     boolean xbeingpressed=false;
+    boolean ybeingpressed=false;
   }
 
   /**
@@ -132,21 +140,21 @@ public class Robot extends TimedRobot {
       //sets one side more than the other for moving turn
       if (controller.getRightX() > Constants.joystickTolerance) {
         Left_Front_Motor.set(speed);
-        Right_Front_Motor.set(0.2*speed);
+        Right_Front_Motor.set(0.02*speed);
       } else {
         Right_Front_Motor.set(speed);
-        Left_Back_Motor.set(0.2*speed);
+        Left_Back_Motor.set(0.02*speed);
       }
     }
   }
   //turning on a dime
   public void turnRobot(double speed) {
     if (speed>0) {
-      Right_Front_Motor.set(speed);
-      Left_Front_Motor.set(speed*-1);
+      Right_Front_Motor.set(speed*0.01);
+      Left_Front_Motor.set(speed*-0.01);
     } else {
-      Left_Front_Motor.set(speed*-1);
-      Right_Front_Motor.set(speed);
+      Left_Front_Motor.set(speed*-0.01);
+      Right_Front_Motor.set(speed*0.01);
     }
     
     
@@ -157,6 +165,25 @@ public class Robot extends TimedRobot {
 
 
     CommandScheduler.getInstance().run();
+    if (limitOrAccell=true) {
+      //not done
+      boolean movingforward = false;
+      if (controller.getLeftY() < Constants.joystickTolerance*-1 || controller.getLeftY() > Constants.joystickTolerance) {
+        lspeed += controller.getLeftY()*maxaccell;
+        rspeed += controller.getLeftY()*maxaccell;
+        movingforward = true;
+      }
+      if (controller.getLeftX() < Constants.joystickTolerance*-1 || controller.getLeftX() > Constants.joystickTolerance) {
+        lspeed += -1*controller.getLeftX()*maxaccell;
+        rspeed += controller.getLeftX()*maxaccell;
+      } else if (movingforward == false) {
+        lspeed += 0-(lspeed/|lspeed|) * maxaccell
+        rspeed += 0-(rspeed/|rspeed|) * maxaccell
+      }
+
+      Left_Front_Motor.set(lspeed);
+      Right_Front_Motor.set(rspeed);
+    } else {
     //driving forward and backward
     //left stick is forward and backward and dime turning
     //right stick x axis is regular turning
@@ -176,6 +203,7 @@ public class Robot extends TimedRobot {
     } else {
       driveForward(0);
       currentRobotSpeed = 0;
+    }
     }
 
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
@@ -219,11 +247,11 @@ public class Robot extends TimedRobot {
     }
     if (controller.getRawButton(X_Button)) {
       //done -- enable or disable the compressor
-      if (enablecompressor==false && xbeingpressed=false) {
+      if (enablecompressor==false && xbeingpressed==false) {
         compressor.enableDigital();
         enablecompressor=true;
         xbeingpressed=true;
-      } else if (enablecompressor==true && xbeingpressed=false) {
+      } else if (enablecompressor==true && xbeingpressed==false) {
         compressor.disable();
         enablecompressor=false;
         xbeingpressed=true;
@@ -231,8 +259,16 @@ public class Robot extends TimedRobot {
     } else xbeingpressed=false;
     
     if (controller.getRawButton(Y_Button)) {
-    //not done -- swap wich side is the front
+    //not done -- safeaccell vs speedlimit
+    if (ybeingpressed==false) {
+      ybeingpressed=true;
+      if (safeaccell=true) {
+        safeaccell=false;
+      } else {
+        safeaccell=true;
+      }
     }
+    } else ybeingpressed=false;
     if (controller.getRawButton(LB_Button)) {
       shooting_servo.setAngle(Constants.servo_up_angle);
       shooting_servo_2.setAngle(180-Constants.servo_up_angle);
