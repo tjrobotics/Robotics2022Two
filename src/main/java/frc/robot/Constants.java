@@ -16,7 +16,7 @@ public final class Constants {
 
     public static final int servo_up_angle = 155;
     public static final int servo_shooting_angle = 140;
-    public static final int servo_down_angle = 95;
+    public static final int servo_down_angle = 115;
     
     public static final int pressureMin = 60;
     public static final int pressureMax = 118;

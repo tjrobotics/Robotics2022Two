@@ -123,7 +123,9 @@ public class Robot extends TimedRobot {
   //go forward and backward
    public void driveForward(double speed)  {
     //normal forward drive with no turn
-    if (controller.getRightX() < Constants.joystickTolerance && controller.getRightX() > Constants.joystickTolerance*-1) {
+    Left_Front_Motor.set(speed);
+    Right_Front_Motor.set(speed);
+    /*if (controller.getRightX() < Constants.joystickTolerance && controller.getRightX() > Constants.joystickTolerance*-1) {
       Left_Front_Motor.set(speed);
       Right_Front_Motor.set(speed);
     } else {
@@ -135,7 +137,7 @@ public class Robot extends TimedRobot {
         Right_Front_Motor.set(speed);
         Left_Back_Motor.set(0.2*speed);
       }
-    }
+    }*/
   }
   //turning on a dime
   public void turnRobot(double speed) {
@@ -161,14 +163,21 @@ public class Robot extends TimedRobot {
     //change the speed
     double speed = 2;
     //change the startup time increment
-    double increment = 15;
+    double increment = 100;
     if (controller.getLeftY() < Constants.joystickTolerance*-1 || controller.getLeftY() > Constants.joystickTolerance) {
       //test if this if statement is accurate
       if (currentRobotSpeed != speed) {
         currentRobotSpeed += speed/increment;
       }
       driveForward(controller.getLeftY()*currentRobotSpeed);
-    } else if(controller.getLeftX() < Constants.joystickTolerance*-1 || controller.getLeftX() > Constants.joystickTolerance) {
+    }else if(controller.getRightY() < Constants.joystickTolerance*-1 || controller.getRightY() > Constants.joystickTolerance) {
+      //test if this if statement is accurate
+      if (currentRobotSpeed != speed) {
+        currentRobotSpeed += speed/increment;
+      }
+      driveForward(controller.getRightY()*currentRobotSpeed*-1);
+    }
+    else if(controller.getLeftX() < Constants.joystickTolerance*-1 || controller.getLeftX() > Constants.joystickTolerance) {
       turnRobot(controller.getLeftX()*speed);
       currentRobotSpeed = 0;
     } else {
