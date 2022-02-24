@@ -110,7 +110,9 @@ public class Robot extends TimedRobot {
     
     //lower input piston
     Input_Piston.set(DoubleSolenoid.Value.kForward);
-
+    
+    //toggle variables here
+    boolean xbeingpressed=false;
   }
 
   /**
@@ -216,12 +218,20 @@ public class Robot extends TimedRobot {
       Shooting_Piston.set(DoubleSolenoid.Value.kReverse);
     }
     if (controller.getRawButton(X_Button)) {
-      compressor.enableDigital();
-      enablecompressor=true;
-    }
+      //done -- enable or disable the compressor
+      if (enablecompressor==false && xbeingpressed=false) {
+        compressor.enableDigital();
+        enablecompressor=true;
+        xbeingpressed=true;
+      } else if (enablecompressor==true && xbeingpressed=false) {
+        compressor.disable();
+        enablecompressor=false;
+        xbeingpressed=true;
+      }
+    } else xbeingpressed=false;
+    
     if (controller.getRawButton(Y_Button)) {
-      compressor.disable();
-      enablecompressor=false;
+    //not done -- swap wich side is the front
     }
     if (controller.getRawButton(LB_Button)) {
       shooting_servo.setAngle(Constants.servo_up_angle);
