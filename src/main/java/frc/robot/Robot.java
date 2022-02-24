@@ -13,12 +13,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
-/* camera */
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -110,7 +104,7 @@ public class Robot extends TimedRobot {
     
     //lower input piston
     Input_Piston.set(DoubleSolenoid.Value.kForward);
-
+    
   }
 
   /**
@@ -122,8 +116,10 @@ public class Robot extends TimedRobot {
    */
   //go forward and backward
    public void driveForward(double speed)  {
+      Left_Front_Motor.set(speed);
+      Right_Front_Motor.set(speed);
     //normal forward drive with no turn
-    if (controller.getRightX() < Constants.joystickTolerance && controller.getRightX() > Constants.joystickTolerance*-1) {
+    /*if (controller.getRightX() < Constants.joystickTolerance && controller.getRightX() > Constants.joystickTolerance*-1) {
       Left_Front_Motor.set(speed);
       Right_Front_Motor.set(speed);
     } else {
@@ -135,7 +131,7 @@ public class Robot extends TimedRobot {
         Right_Front_Motor.set(speed);
         Left_Back_Motor.set(0.2*speed);
       }
-    }
+    }*/
   }
   //turning on a dime
   public void turnRobot(double speed) {
@@ -163,11 +159,15 @@ public class Robot extends TimedRobot {
     //change the startup time increment
     double increment = 100;
     if (controller.getLeftY() < Constants.joystickTolerance*-1 || controller.getLeftY() > Constants.joystickTolerance) {
-      //test if this if statement is accurate
       if (currentRobotSpeed != speed) {
         currentRobotSpeed += speed/increment;
       }
       driveForward(controller.getLeftY()*currentRobotSpeed);
+    } else if(controller.getRightY() < Constants.joystickTolerance*-1 || controller.getRightY() > Constants.joystickTolerance) {
+      if (currentRobotSpeed != speed) {
+        currentRobotSpeed += speed/increment;
+      }
+      driveForward(controller.getRightY()*currentRobotSpeed*-1);
     } else if(controller.getLeftX() < Constants.joystickTolerance*-1 || controller.getLeftX() > Constants.joystickTolerance) {
       turnRobot(controller.getLeftX()*speed);
       currentRobotSpeed = 0;
@@ -175,22 +175,6 @@ public class Robot extends TimedRobot {
       driveForward(0);
       currentRobotSpeed = 0;
     }
-
-    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-    System.out.println(NetworkTableInstance.getDefault());
-    NetworkTableEntry tx = table.getEntry("tx");
-		NetworkTableEntry ty = table.getEntry("ty");
-		NetworkTableEntry ta = table.getEntry("ta");
-		
-		//read values periodically
-		double x = tx.getDouble(0.0);
-		double y = ty.getDouble(0.0);
-		double area = ta.getDouble(0.0);
-
-    //post to smart dashboard periodically
-		SmartDashboard.putNumber("LimelightX", x);
-		SmartDashboard.putNumber("LimelightY", y);
-		SmartDashboard.putNumber("LimelightArea", area);
   
     if (driftMode) {
       Left_Back_Motor.setIdleMode(IdleMode.kCoast);
@@ -217,12 +201,10 @@ public class Robot extends TimedRobot {
     }
     if (controller.getRawButton(X_Button)) {
       compressor.enableDigital();
-      enablecompressor=true;
     }
     if (controller.getRawButton(Y_Button)) {
       compressor.disable();
-      enablecompressor=false;
-    }
+    } 
     if (controller.getRawButton(LB_Button)) {
       shooting_servo.setAngle(Constants.servo_up_angle);
       shooting_servo_2.setAngle(180-Constants.servo_up_angle);
@@ -248,9 +230,6 @@ public class Robot extends TimedRobot {
     }
       
     }
-    /*if (controller.getRawButton(Start_Button)) {
-      driftMode = !driftMode;
-    }*/
   
 
   /** This function is called once each time the robot enters Disabled mode. */
