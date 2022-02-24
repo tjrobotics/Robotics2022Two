@@ -161,7 +161,7 @@ public class Robot extends TimedRobot {
     //change the speed
     double speed = 2;
     //change the startup time increment
-    double increment = 15;
+    double increment = 100;
     if (controller.getLeftY() < Constants.joystickTolerance*-1 || controller.getLeftY() > Constants.joystickTolerance) {
       //test if this if statement is accurate
       if (currentRobotSpeed != speed) {
