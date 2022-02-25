@@ -152,11 +152,11 @@ public class Robot extends TimedRobot {
   //turning on a dime
   public void turnRobot(double speed) {
     if (speed>0) {
-      Right_Front_Motor.set(speed*0.01);
-      Left_Front_Motor.set(speed*-0.01);
+      Right_Front_Motor.set(speed);
+      Left_Front_Motor.set(speed*-1);
     } else {
-      Left_Front_Motor.set(speed*-0.01);
-      Right_Front_Motor.set(speed*0.01);
+      Left_Front_Motor.set(speed);
+      Right_Front_Motor.set(speed*-1);
     }
     
     
