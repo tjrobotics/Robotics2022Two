@@ -16,10 +16,49 @@ public final class Constants {
 
     public static final int servo_up_angle = 155;
     public static final int servo_shooting_angle = 140;
-    public static final int servo_down_angle = 115;
+    public static final int servo_down_angle = 95;
     
     public static final int pressureMin = 60;
     public static final int pressureMax = 118;
 
     public static final double joystickTolerance = 0.1;
+
+    public static final int robotSpeed = 2;
+    public static final int robotSpeedInterval = 100;
+
+    //Controller Buttons
+    public static final int A_Button = 1;
+    public static final int B_Button = 2;
+    public static final int X_Button = 3;
+    public static final int Y_Button = 4;
+    public static final int LB_Button = 5;
+    public static final int RB_Button = 6;
+    public static final int Back_Button = 7;
+    public static final int Start_Button = 8;
+    public static final int Left_Axis_Press = 9;
+    public static final int Right_Axis_Press = 10;
+
+    //controller mapping
+    public static final int PISTON_SHOOTING_UP = A_Button;
+    public static final int PISTON_SHOOTING_DOWN = B_Button;
+    public static final int COMPRESSOR_TOGGLE = X_Button;
+    public static final int SERVO_DOWN = RB_Button;
+    public static final int SERVO_UP = LB_Button;
+    public static final int SERVO_SHOOTING = Back_Button;
+    public static final int RAISE_INPUT_RAMP = Start_Button;
+    public static final int SWITCH_DRIVING_DIRECTION = Y_Button;
+    //Left Trigger is the Input
+    //Left Stick Vertical for forward and backward
+    //Left Stick Horizontal for Turning on a dime
+    //Right Stick Horizonal for turning while driving forward/backward
+
+
+
+
+
+
+
+
+    
+        
 }
