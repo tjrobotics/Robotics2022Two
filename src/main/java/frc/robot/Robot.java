@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -139,6 +140,91 @@ public class Robot extends TimedRobot {
 
 
     CommandScheduler.getInstance().run();
+  }
+  
+
+  /** This function is called once each time the robot enters Disabled mode. */
+  @Override
+  public void disabledInit() {
+    Input_Piston.set(DoubleSolenoid.Value.kForward);
+
+  }
+
+  @Override
+  public void disabledPeriodic() {}
+
+  /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
+  @Override
+  public void autonomousInit() {
+    /*m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+
+    // schedule the autonomous command (example)
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.schedule();
+    }*/
+    shooting_servo.setAngle(Constants.servo_up_angle);
+    Input_Piston.set(DoubleSolenoid.Value.kReverse);
+    Timer.delay(2);
+    Input_Motor.set(10);
+    Conveyer_Motor.set(10);
+    Timer.delay(4);
+    Conveyer_Motor.set(0);
+    Input_Motor.set(0);
+    Timer.delay(2);
+    shooting_servo.setAngle(Constants.servo_shooting_angle);
+    Timer.delay(2);
+    Shooting_Piston.set(DoubleSolenoid.Value.kReverse);
+    Timer.delay(2);
+    Shooting_Piston.set(DoubleSolenoid.Value.kForward);
+
+
+
+    /*shooting_servo.setAngle(Constants.servo_up_angle);
+    Right_Front_Motor.set(-0.2);
+    Left_Front_Motor.set(-0.2);
+    Timer.delay(1);
+    Right_Front_Motor.set(0);
+    Left_Front_Motor.set(0);
+    Timer.delay(1);
+    Left_Front_Motor.set(-0.5); //0.5 speed at 0.7 timer 90 degree
+    Right_Front_Motor.set(0.5);
+    Timer.delay(0.65);
+    Right_Front_Motor.set(0);
+    Left_Front_Motor.set(0);
+    Timer.delay(1);
+    Left_Front_Motor.set(0.5); //0.5 speed at 0.7 timer
+    Right_Front_Motor.set(-0.5);
+    Timer.delay(0.65);
+    Right_Front_Motor.set(0);
+    Left_Front_Motor.set(0);
+    Timer.delay(1);
+    Right_Front_Motor.set(-0.2);
+    Left_Front_Motor.set(-0.2);
+    Timer.delay(1);
+    Right_Front_Motor.set(0);
+    Left_Front_Motor.set(0);*/
+  }
+
+  /** This function is called periodically during autonomous. */
+  //@Override
+  //public void autonomousPeriodic() {}
+
+  @Override
+  public void teleopInit() {
+      
+    
+  }
+
+  /** This function is called periodically during operator control. */
+  @Override
+  public void teleopPeriodic() {
+       // This makes sure that the autonomous stops running when
+    // teleop starts running. If you want the autonomous to
+    // continue until interrupted by another command, remove
+    // this line or comment it out.
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.cancel();
+    }
     //driving forward and backward
     //left stick is forward and backward and dime turning
     //right stick x axis is regular turning
@@ -217,49 +303,8 @@ public class Robot extends TimedRobot {
     if (controller.getRawButton(Constants.SWITCH_DRIVING_DIRECTION)) {
       robotFacingInput = !robotFacingInput;
     }
-      
+
     }
-  
-
-  /** This function is called once each time the robot enters Disabled mode. */
-  @Override
-  public void disabledInit() {
-    Input_Piston.set(DoubleSolenoid.Value.kForward);
-
-  }
-
-  @Override
-  public void disabledPeriodic() {}
-
-  /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
-  @Override
-  public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-
-    // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
-    }
-  }
-
-  /** This function is called periodically during autonomous. */
-  //@Override
-  //public void autonomousPeriodic() {}
-
-  @Override
-  public void teleopInit() {
-    // This makes sure that the autonomous stops running when
-    // teleop starts running. If you want the autonomous to
-    // continue until interrupted by another command, remove
-    // this line or comment it out.
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
-    }
-  }
-
-  /** This function is called periodically during operator control. */
-  @Override
-  public void teleopPeriodic() {  }
 
   @Override
   public void testInit() {
