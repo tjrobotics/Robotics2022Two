@@ -36,7 +36,6 @@ public class Robot extends TimedRobot {
   CANSparkMax Input_Motor;
   XboxController controller;
   Servo shooting_servo;
-  Servo shooting_servo_2;
   PneumaticsModuleType ourType = PneumaticsModuleType.CTREPCM;
   Compressor compressor;
   DoubleSolenoid Shooting_Piston;
@@ -46,18 +45,11 @@ public class Robot extends TimedRobot {
 
   boolean enablecompressor = true;
 
-  //Controller Buttons
-  int A_Button = 1;
-  int B_Button = 2;
-  int X_Button = 3;
-  int Y_Button = 4;
-  int LB_Button = 5;
-  int RB_Button = 6;
-  int Back_Button = 7;
-  int Start_Button = 8;
-
   //current robot speed
   double currentRobotSpeed = 0;
+
+  //which current facing the robot is
+  boolean robotFacingInput = true;
 
 
   /**
@@ -93,8 +85,8 @@ public class Robot extends TimedRobot {
 
     //servos
     shooting_servo = new Servo(0);
-    shooting_servo_2 = new Servo(1);
 
+    //restore all motors to normal behavior
     Left_Back_Motor.restoreFactoryDefaults();
     Left_Front_Motor.restoreFactoryDefaults();
     Right_Back_Motor.restoreFactoryDefaults();
@@ -116,10 +108,8 @@ public class Robot extends TimedRobot {
    */
   //go forward and backward
    public void driveForward(double speed)  {
-      Left_Front_Motor.set(speed);
-      Right_Front_Motor.set(speed);
     //normal forward drive with no turn
-    /*if (controller.getRightX() < Constants.joystickTolerance && controller.getRightX() > Constants.joystickTolerance*-1) {
+    if (controller.getRightX() < Constants.joystickTolerance && controller.getRightX() > Constants.joystickTolerance*-1) {
       Left_Front_Motor.set(speed);
       Right_Front_Motor.set(speed);
     } else {
@@ -131,7 +121,7 @@ public class Robot extends TimedRobot {
         Right_Front_Motor.set(speed);
         Left_Back_Motor.set(0.2*speed);
       }
-    }*/
+    }
   }
   //turning on a dime
   public void turnRobot(double speed) {
@@ -142,8 +132,6 @@ public class Robot extends TimedRobot {
       Left_Front_Motor.set(speed*-1);
       Right_Front_Motor.set(speed);
     }
-    
-    
   }
 
   @Override
@@ -155,19 +143,18 @@ public class Robot extends TimedRobot {
     //left stick is forward and backward and dime turning
     //right stick x axis is regular turning
     //change the speed
-    double speed = 2;
+    double speed = Constants.robotSpeed;
     //change the startup time increment
-    double increment = 100;
+    double increment = Constants.robotSpeedInterval;
     if (controller.getLeftY() < Constants.joystickTolerance*-1 || controller.getLeftY() > Constants.joystickTolerance) {
       if (currentRobotSpeed != speed) {
         currentRobotSpeed += speed/increment;
       }
-      driveForward(controller.getLeftY()*currentRobotSpeed);
-    } else if(controller.getRightY() < Constants.joystickTolerance*-1 || controller.getRightY() > Constants.joystickTolerance) {
-      if (currentRobotSpeed != speed) {
-        currentRobotSpeed += speed/increment;
+      if (robotFacingInput) {
+        driveForward(controller.getLeftY()*currentRobotSpeed);
+      } else {
+        driveForward(controller.getLeftY()*currentRobotSpeed*-1);
       }
-      driveForward(controller.getRightY()*currentRobotSpeed*-1);
     } else if(controller.getLeftX() < Constants.joystickTolerance*-1 || controller.getLeftX() > Constants.joystickTolerance) {
       turnRobot(controller.getLeftX()*speed);
       currentRobotSpeed = 0;
@@ -193,33 +180,32 @@ public class Robot extends TimedRobot {
     } else if(compressor.getPressure()< Constants.pressureMin+1 && enablecompressor == true) {
       compressor.enableDigital();
     }
-    if (controller.getRawButton(A_Button)) {
+    if (controller.getRawButton(Constants.PISTON_SHOOTING_DOWN)) {
       Shooting_Piston.set(DoubleSolenoid.Value.kForward);
     }
-    if (controller.getRawButton(B_Button)) {
+    if (controller.getRawButton(Constants.PISTON_SHOOTING_UP)) {
       Shooting_Piston.set(DoubleSolenoid.Value.kReverse);
     }
-    if (controller.getRawButton(X_Button)) {
-      compressor.enableDigital();
+    if (controller.getRawButton(Constants.COMPRESSOR_TOGGLE)) {
+      if (enablecompressor) {
+        compressor.disable();
+        enablecompressor = false;
+      } else {
+        compressor.enableDigital();
+        enablecompressor = true;
+      }
     }
-    if (controller.getRawButton(Y_Button)) {
-      compressor.disable();
-    } 
-    if (controller.getRawButton(LB_Button)) {
+    if (controller.getRawButton(Constants.SERVO_UP)) {
       shooting_servo.setAngle(Constants.servo_up_angle);
-      shooting_servo_2.setAngle(180-Constants.servo_up_angle);
     }
-    if (controller.getRawButton(RB_Button)) {
+    if (controller.getRawButton(Constants.SERVO_DOWN)) {
       shooting_servo.setAngle(Constants.servo_down_angle);
-      shooting_servo_2.setAngle(180-Constants.servo_down_angle);
     }
-    if (controller.getRawButton(Back_Button)) {
+    if (controller.getRawButton(Constants.SERVO_SHOOTING)) {
       shooting_servo.setAngle(Constants.servo_shooting_angle);
-      shooting_servo_2.setAngle(180-Constants.servo_shooting_angle);
     }
-    if (controller.getRawButton(Start_Button)) {
+    if (controller.getRawButton(Constants.RAISE_INPUT_RAMP)) {
       Input_Piston.set(DoubleSolenoid.Value.kReverse);
-
     }
     if (controller.getLeftTriggerAxis()>0) {
       Input_Motor.set(10);
@@ -227,6 +213,9 @@ public class Robot extends TimedRobot {
     } else {
       Input_Motor.set(0);
       Conveyer_Motor.set(0);
+    }
+    if (controller.getRawButton(Constants.SWITCH_DRIVING_DIRECTION)) {
+      robotFacingInput = !robotFacingInput;
     }
       
     }
