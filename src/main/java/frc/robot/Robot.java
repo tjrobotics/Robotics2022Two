@@ -9,8 +9,8 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -28,14 +28,18 @@ import edu.wpi.first.cameraserver.CameraServer;
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
-  private RobotContainer m_robotContainer;
+  //private RobotContainer m_robotContainer;
   CANSparkMax Left_Back_Motor;
   CANSparkMax Left_Front_Motor;
   CANSparkMax Right_Back_Motor;
   CANSparkMax Right_Front_Motor;
   CANSparkMax Conveyer_Motor;
   CANSparkMax Input_Motor;
-  XboxController controller;
+
+  XboxController controller1;
+  XboxController controller2;
+  XboxController[] controllers;
+
   Servo shooting_servo;
   PneumaticsModuleType ourType = PneumaticsModuleType.CTREPCM;
   Compressor compressor;
@@ -52,6 +56,10 @@ public class Robot extends TimedRobot {
   //which current facing the robot is
   boolean robotFacingInput = true;
 
+  //decides what controller the button are on
+  boolean twoControllers = false; //change this for two players
+  XboxController buttonController;
+
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -60,12 +68,23 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     //starts the camera server
-    CameraServer.startAutomaticCapture();
+    CameraServer.startAutomaticCapture(0);
+    CameraServer.startAutomaticCapture(1);
+
+    //sets options for automous
+    SmartDashboard.putStringArray("Auto List", new String[]{"Drive", "Input"});
     
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
-    m_robotContainer = new RobotContainer();
-    controller = new XboxController(0);
+    //m_robotContainer = new RobotContainer();
+    controller1 = new XboxController(0);
+    controller2 = new XboxController(1);
+    controllers = new XboxController[]{controller1, controller2};
+    if (twoControllers) {
+      buttonController = controllers[1];
+    } else {
+      buttonController = controllers[0];
+    }
     
     //Change Motor ID HERE
     Left_Back_Motor = new CANSparkMax(1, MotorType.kBrushed);
@@ -110,12 +129,12 @@ public class Robot extends TimedRobot {
   //go forward and backward
    public void driveForward(double speed)  {
     //normal forward drive with no turn
-    if (controller.getRightX() < Constants.joystickTolerance && controller.getRightX() > Constants.joystickTolerance*-1) {
+    if (controllers[0].getRightX() < Constants.joystickTolerance && controllers[0].getRightX() > Constants.joystickTolerance*-1) {
       Left_Front_Motor.set(speed);
       Right_Front_Motor.set(speed);
     } else {
       //sets one side more than the other for moving turn
-      if (controller.getRightX() > Constants.joystickTolerance) {
+      if (controllers[0].getRightX() > Constants.joystickTolerance) {
         Left_Front_Motor.set(speed);
         Right_Front_Motor.set(0.2*speed);
       } else {
@@ -162,7 +181,19 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }*/
-    shooting_servo.setAngle(Constants.servo_up_angle);
+
+    AutoCommands auto = new AutoCommands(Left_Front_Motor, Right_Front_Motor, Input_Motor, Conveyer_Motor, shooting_servo, Input_Piston, Shooting_Piston);
+
+    // At the beginning of auto
+    String autoName = SmartDashboard.getString("Auto Selector", "Drive"); // This would make "Drive Forwards the default auto
+    switch(autoName) {
+      case "Drive":
+        auto.COMMANDdriving();
+      case "Input":
+        auto.COMMANDinputSystem();
+    }    
+    
+    /*shooting_servo.setAngle(Constants.servo_up_angle);
     Input_Piston.set(DoubleSolenoid.Value.kReverse);
     Timer.delay(2);
     Input_Motor.set(10);
@@ -175,7 +206,7 @@ public class Robot extends TimedRobot {
     Timer.delay(2);
     Shooting_Piston.set(DoubleSolenoid.Value.kReverse);
     Timer.delay(2);
-    Shooting_Piston.set(DoubleSolenoid.Value.kForward);
+    Shooting_Piston.set(DoubleSolenoid.Value.kForward);*/
 
 
 
@@ -232,17 +263,24 @@ public class Robot extends TimedRobot {
     double speed = Constants.robotSpeed;
     //change the startup time increment
     double increment = Constants.robotSpeedInterval;
-    if (controller.getLeftY() < Constants.joystickTolerance*-1 || controller.getLeftY() > Constants.joystickTolerance) {
-      if (currentRobotSpeed != speed) {
-        currentRobotSpeed += speed/increment;
-      }
-      if (robotFacingInput) {
-        driveForward(controller.getLeftY()*currentRobotSpeed);
+    if (controllers[0].getLeftY() < Constants.joystickTolerance*-1 || controllers[0].getLeftY() > Constants.joystickTolerance) {
+      if (controllers[0].getLeftY() > 0) {
+        if (currentRobotSpeed != speed) {
+          currentRobotSpeed += speed/increment;
+        }
       } else {
-        driveForward(controller.getLeftY()*currentRobotSpeed*-1);
+        if (currentRobotSpeed != speed*-1) {
+          currentRobotSpeed -= speed/increment;
+        }
       }
-    } else if(controller.getLeftX() < Constants.joystickTolerance*-1 || controller.getLeftX() > Constants.joystickTolerance) {
-      turnRobot(controller.getLeftX()*speed);
+      
+      if (robotFacingInput) {
+        driveForward(currentRobotSpeed);
+      } else {
+        driveForward(currentRobotSpeed*-1);
+      }
+    } else if(controllers[0].getLeftX() < Constants.joystickTolerance*-1 || controllers[0].getLeftX() > Constants.joystickTolerance) {
+      turnRobot(controllers[0].getLeftX()*speed);
       currentRobotSpeed = 0;
     } else {
       driveForward(0);
@@ -266,13 +304,13 @@ public class Robot extends TimedRobot {
     } else if(compressor.getPressure()< Constants.pressureMin+1 && enablecompressor == true) {
       compressor.enableDigital();
     }
-    if (controller.getRawButton(Constants.PISTON_SHOOTING_DOWN)) {
+    if (buttonController.getRawButton(Constants.PISTON_SHOOTING_DOWN)) {
       Shooting_Piston.set(DoubleSolenoid.Value.kForward);
     }
-    if (controller.getRawButton(Constants.PISTON_SHOOTING_UP)) {
+    if (buttonController.getRawButton(Constants.PISTON_SHOOTING_UP)) {
       Shooting_Piston.set(DoubleSolenoid.Value.kReverse);
     }
-    if (controller.getRawButton(Constants.COMPRESSOR_TOGGLE)) {
+    if (buttonController.getRawButton(Constants.COMPRESSOR_TOGGLE)) {
       if (enablecompressor) {
         compressor.disable();
         enablecompressor = false;
@@ -281,26 +319,26 @@ public class Robot extends TimedRobot {
         enablecompressor = true;
       }
     }
-    if (controller.getRawButton(Constants.SERVO_UP)) {
+    if (buttonController.getRawButton(Constants.SERVO_UP)) {
       shooting_servo.setAngle(Constants.servo_up_angle);
     }
-    if (controller.getRawButton(Constants.SERVO_DOWN)) {
+    if (buttonController.getRawButton(Constants.SERVO_DOWN)) {
       shooting_servo.setAngle(Constants.servo_down_angle);
     }
-    if (controller.getRawButton(Constants.SERVO_SHOOTING)) {
+    if (buttonController.getRawButton(Constants.SERVO_SHOOTING)) {
       shooting_servo.setAngle(Constants.servo_shooting_angle);
     }
-    if (controller.getRawButton(Constants.RAISE_INPUT_RAMP)) {
+    if (buttonController.getRawButton(Constants.RAISE_INPUT_RAMP)) {
       Input_Piston.set(DoubleSolenoid.Value.kReverse);
     }
-    if (controller.getLeftTriggerAxis()>0) {
+    if (controllers[0].getLeftTriggerAxis()>0) {
       Input_Motor.set(10);
       Conveyer_Motor.set(15);
     } else {
       Input_Motor.set(0);
       Conveyer_Motor.set(0);
     }
-    if (controller.getRawButton(Constants.SWITCH_DRIVING_DIRECTION)) {
+    if (controllers[0].getRawButton(Constants.SWITCH_DRIVING_DIRECTION)) {
       robotFacingInput = !robotFacingInput;
     }
 

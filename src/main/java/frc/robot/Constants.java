@@ -38,7 +38,7 @@ public final class Constants {
     public static final int Left_Axis_Press = 9;
     public static final int Right_Axis_Press = 10;
 
-    //controller mapping
+    //controller mapping for single use
     public static final int PISTON_SHOOTING_UP = A_Button;
     public static final int PISTON_SHOOTING_DOWN = B_Button;
     public static final int COMPRESSOR_TOGGLE = X_Button;
@@ -51,6 +51,10 @@ public final class Constants {
     //Left Stick Vertical for forward and backward
     //Left Stick Horizontal for Turning on a dime
     //Right Stick Horizonal for turning while driving forward/backward
+
+
+
+    public static final double turingConversionRate = 0.714285714/90;
 
 
 
