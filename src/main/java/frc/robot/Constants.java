@@ -14,12 +14,12 @@ package frc.robot;
  */
 public final class Constants {
 
-    public static final int servo_up_angle = 160;
-    public static final int servo_shooting_angle = 150;
-    public static final int servo_down_angle = 95;
+    public static final int servo_up_angle = 175;
+    public static final int servo_shooting_angle = 160;
+    public static final int servo_down_angle = 130;
     
-    public static final int pressureMin = 60;
-    public static final int pressureMax = 118;
+    public static final int pressureMin = 40;
+    public static final int pressureMax = 55;
 
     public static final double joystickTolerance = 0.1;
 

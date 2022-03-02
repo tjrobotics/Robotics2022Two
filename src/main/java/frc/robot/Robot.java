@@ -312,7 +312,7 @@ public class Robot extends TimedRobot {
       Right_Back_Motor.setIdleMode(IdleMode.kBrake);
       Right_Front_Motor.setIdleMode(IdleMode.kBrake);
     }
-    
+    System.out.println(compressor.getPressure());
     if(compressor.getPressure()> Constants.pressureMax-1) {
       compressor.disable();
     } else if(compressor.getPressure()< Constants.pressureMin+1 && enablecompressor == true) {
