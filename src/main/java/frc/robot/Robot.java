@@ -263,8 +263,8 @@ public class Robot extends TimedRobot {
     double speed = Constants.robotSpeed;
     //change the startup time increment
     double increment = Constants.robotSpeedInterval;
-    if (controllers[0].getLeftY() < Constants.joystickTolerance*-1 || controllers[0].getLeftY() > Constants.joystickTolerance) {
-      if (controllers[0].getLeftY() > 0) {
+    if (controllers[0].getLeftY() > Constants.joystickTolerance || controllers[0].getLeftY() < Constants.joystickTolerance*-1) {
+      if (controllers[0].getLeftY() > Constants.joystickTolerance) {
         if (currentRobotSpeed != speed) {
           currentRobotSpeed += speed/increment;
         }
@@ -274,13 +274,27 @@ public class Robot extends TimedRobot {
         }
       }
       
+      
+      /*if (controllers[0].getLeftY() > Constants.joystickTolerance && speed < 0) {
+        driveForward(0);
+      } else if(controllers[0].getLeftY() < Constants.joystickTolerance*-1 && speed > 0) {
+        driveForward(0);
+      } else {
+        if (robotFacingInput) {
+          driveForward(currentRobotSpeed);
+        } else {
+          driveForward(currentRobotSpeed*-1);
+        }
+      }*/
       if (robotFacingInput) {
         driveForward(currentRobotSpeed);
       } else {
         driveForward(currentRobotSpeed*-1);
       }
+      
+      
     } else if(controllers[0].getLeftX() < Constants.joystickTolerance*-1 || controllers[0].getLeftX() > Constants.joystickTolerance) {
-      turnRobot(controllers[0].getLeftX()*speed);
+     turnRobot(controllers[0].getLeftX()*speed);
       currentRobotSpeed = 0;
     } else {
       driveForward(0);

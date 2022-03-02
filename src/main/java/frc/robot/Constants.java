@@ -23,7 +23,7 @@ public final class Constants {
 
     public static final double joystickTolerance = 0.1;
 
-    public static final double robotSpeed = 0.8;
+    public static final double robotSpeed = 0.5;
     public static final int robotSpeedInterval = 20;
 
     //Controller Buttons

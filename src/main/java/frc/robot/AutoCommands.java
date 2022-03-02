@@ -80,8 +80,8 @@ public class AutoCommands {
     }
     public void COMMANDdriving() {
         driveStraight(-0.2, 2);
-        turnRobot(90, 2);
-        turnRobot(-90, 2);
+        turnRobot(90, 1);
+        turnRobot(-90, 1);
         driveStraight(-0.2, 2);
     }
 
