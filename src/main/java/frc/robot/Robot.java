@@ -57,7 +57,7 @@ public class Robot extends TimedRobot {
   boolean robotFacingInput = true;
 
   //decides what controller the button are on
-  boolean twoControllers = false; //change this for two players
+  boolean twoControllers = true; //change this for two players
   XboxController buttonController;
 
 
@@ -293,8 +293,8 @@ public class Robot extends TimedRobot {
       }
       
       
-    } else if(controllers[0].getLeftX() < Constants.joystickTolerance*-1 || controllers[0].getLeftX() > Constants.joystickTolerance) {
-     turnRobot(controllers[0].getLeftX()*speed);
+    } else if(controllers[0].getRightX() < Constants.joystickTolerance*-1 || controllers[0].getRightX() > Constants.joystickTolerance) {
+     turnRobot(controllers[0].getRightX()*speed);
       currentRobotSpeed = 0;
     } else {
       driveForward(0);
