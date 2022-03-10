@@ -14,19 +14,28 @@ package frc.robot;
  */
 public final class Constants {
 
+    //CHANGE FOR TWO PLAYERS
+    public static final boolean twoControllers = true;
+
+    //CHANGE SERVO ANGLES HERE (< IS DOWN, > IS HIGHER)
     public static final int servo_up_angle = 175;
     public static final int servo_shooting_angle = 145;
     public static final int servo_down_angle = 130;
     
+    //CHANGE MIN AND MAX PRESSURE HERE
     public static final int pressureMin = 40;
     public static final int pressureMax = 55;
 
-    public static final double joystickTolerance = 0.1;
-
+    //ROBOT SPEED
     public static final double robotSpeed = 0.5;
+   
+    //ACCELERATION, > IS SLOWER ACCELERATION
     public static final int robotSpeedInterval = 20;
 
-    //Controller Buttons
+    //so we don't get controller drift
+    public static final double joystickTolerance = 0.1;
+
+    //Controller Buttons (DO NOT CHANGE)
     public static final int A_Button = 1;
     public static final int B_Button = 2;
     public static final int X_Button = 3;
@@ -38,7 +47,7 @@ public final class Constants {
     public static final int Left_Axis_Press = 9;
     public static final int Right_Axis_Press = 10;
 
-    //controller mapping for single use
+    //controller mapping for single use. CHANGE FOR DIFFERENT BUTTONS FOR EACH FUNCTION
     public static final int PISTON_SHOOTING_UP = A_Button;
     public static final int PISTON_SHOOTING_DOWN = B_Button;
     public static final int COMPRESSOR_TOGGLE = X_Button;
@@ -53,7 +62,7 @@ public final class Constants {
     //Right Stick Horizonal for turning while driving forward/backward
 
 
-
+    //NO TOUCHY. ITS THE MAGIC NUMBER
     public static final double turingConversionRate = 0.714285714/90;
 
 
