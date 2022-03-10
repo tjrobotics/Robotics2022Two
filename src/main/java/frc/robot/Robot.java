@@ -242,7 +242,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-      
+      System.out.println(compressor.getPressure());
     
   }
 
@@ -313,10 +313,10 @@ public class Robot extends TimedRobot {
       Right_Front_Motor.setIdleMode(IdleMode.kBrake);
     }
     System.out.println(compressor.getPressure());
-    if(compressor.getPressure()> Constants.pressureMax-1) {
+    if(compressor.getPressure()> 30) {
       compressor.disable();
     } else if(compressor.getPressure()< Constants.pressureMin+1 && enablecompressor == true) {
-      compressor.enableDigital();
+      //compressor.enableDigital();
     }
     if (buttonController.getRawButton(Constants.PISTON_SHOOTING_DOWN)) {
       Shooting_Piston.set(DoubleSolenoid.Value.kForward);
