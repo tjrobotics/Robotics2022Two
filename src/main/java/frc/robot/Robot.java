@@ -191,7 +191,7 @@ public class Robot extends TimedRobot {
     String autoName = SmartDashboard.getString("Auto Selector", "Drive"); // This would make "Drive Forwards the default auto
     switch(autoName) {
       case "Drive":
-        auto.COMMANDdriving();
+      auto.COMMANDdriving();
       case "Input":
         auto.COMMANDinputSystem();
     }    

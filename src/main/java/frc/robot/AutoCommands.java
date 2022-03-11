@@ -85,10 +85,21 @@ public class AutoCommands {
 
     //DRIVING SYSTEM AUTO COMMAND
     public void COMMANDdriving() {
-        driveStraight(-0.2, 2);
-        turnRobot(90, 1);
-        turnRobot(-90, 1);
-        driveStraight(-0.2, 2);
+        driveStraight(-0.2, 0.8);
+        raiseInputRamp();
+        Timer.delay(1);
+        setServoRamp("up");
+        runInput(4);
+        Timer.delay(0.5);
+        setServoRamp("shooting");
+        Timer.delay(0.5);
+        shootPiston(true);
+        Timer.delay(0.5);
+        shootPiston(false);
+        Timer.delay(0.5);
+        setServoRamp("up");
+        Timer.delay(1);
+        driveStraight(0.5, 1);
     }
 
 }
