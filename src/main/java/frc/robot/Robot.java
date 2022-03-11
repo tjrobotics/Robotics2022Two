@@ -57,7 +57,7 @@ public class Robot extends TimedRobot {
   boolean robotFacingInput = true;
 
   //decides what controller the button are on
-  boolean twoControllers = true; //change this for two players
+  boolean twoControllers = Constants.twoControllers;
   XboxController buttonController;
 
 
@@ -116,6 +116,9 @@ public class Robot extends TimedRobot {
     
     //lower input piston
     Input_Piston.set(DoubleSolenoid.Value.kForward);
+
+    //making sure the compressor is on a loop
+    //compressor.enableAnalog(Constants.pressureMin, Constants.pressureMax);
     
   }
 
@@ -313,10 +316,8 @@ public class Robot extends TimedRobot {
       Right_Front_Motor.setIdleMode(IdleMode.kBrake);
     }
     System.out.println(compressor.getPressure());
-    if(compressor.getPressure()> 30) {
+    if(compressor.getPressure()> Constants.pressureMax-1) {
       compressor.disable();
-    } else if(compressor.getPressure()< Constants.pressureMin+1 && enablecompressor == true) {
-      //compressor.enableDigital();
     }
     if (buttonController.getRawButton(Constants.PISTON_SHOOTING_DOWN)) {
       Shooting_Piston.set(DoubleSolenoid.Value.kForward);
@@ -358,6 +359,7 @@ public class Robot extends TimedRobot {
 
     }
 
+
   @Override
   public void testInit() {
     // Cancels all running commands at the start of test mode.
@@ -366,7 +368,23 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+    compressor.disable();
+    if (controllers[0].getLeftY() > 0) {
+      Left_Back_Motor.set(1);
+    } else if (controllers[0].getLeftY() < 0) {
+      Left_Front_Motor.set(1);
+    } else if (controllers[0].getRightY() > 0) {
+      Right_Back_Motor.set(1);
+    } else if (controllers[0].getRightY() < 0) {
+      Right_Front_Motor.set(1);
+    } else {
+      Right_Front_Motor.set(0);
+      Right_Back_Motor.set(0);
+      Left_Front_Motor.set(0);
+      Left_Back_Motor.set(0);
+    }
+  }
 
   /** This function is called once when the robot is first started up. */
   @Override

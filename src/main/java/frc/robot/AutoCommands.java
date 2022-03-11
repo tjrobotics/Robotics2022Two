@@ -66,6 +66,10 @@ public class AutoCommands {
         conveyor_motor.set(0);
     }
 
+    //EDIT AUTO COMMANDS here -------------------------------------------------------------------
+
+
+    //INPUY SYSTEM AUTO COMMAND
     public void COMMANDinputSystem() {
         setServoRamp("up");
         raiseInputRamp();
@@ -78,6 +82,8 @@ public class AutoCommands {
         Timer.delay(2);
         shootPiston(false);
     }
+
+    //DRIVING SYSTEM AUTO COMMAND
     public void COMMANDdriving() {
         driveStraight(-0.2, 2);
         turnRobot(90, 1);
