@@ -67,6 +67,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    
     //starts the camera server
     CameraServer.startAutomaticCapture(0);
     CameraServer.startAutomaticCapture(1);
@@ -115,7 +116,8 @@ public class Robot extends TimedRobot {
     Conveyer_Motor.restoreFactoryDefaults();
     
     //lower input piston
-    Input_Piston.set(DoubleSolenoid.Value.kForward);
+    //Input_Piston.set(DoubleSolenoid.Value.kForward);
+    
 
     //making sure the compressor is on a loop
     //compressor.enableAnalog(Constants.pressureMin, Constants.pressureMax);
@@ -168,7 +170,6 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    Input_Piston.set(DoubleSolenoid.Value.kForward);
 
   }
 
@@ -191,7 +192,7 @@ public class Robot extends TimedRobot {
     String autoName = SmartDashboard.getString("Auto Selector", "Drive"); // This would make "Drive Forwards the default auto
     switch(autoName) {
       case "Drive":
-      auto.COMMANDdriving();
+        auto.COMMANDdriving();
       case "Input":
         auto.COMMANDinputSystem();
     }    
@@ -245,7 +246,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-      System.out.println(compressor.getPressure());
+    Input_Piston.set(DoubleSolenoid.Value.kReverse);
     
   }
 
@@ -315,7 +316,7 @@ public class Robot extends TimedRobot {
       Right_Back_Motor.setIdleMode(IdleMode.kBrake);
       Right_Front_Motor.setIdleMode(IdleMode.kBrake);
     }
-    System.out.println(compressor.getPressure());
+    //System.out.println(compressor.getPressure());
     if(compressor.getPressure()> Constants.pressureMax-1) {
       compressor.disable();
     }
@@ -344,7 +345,7 @@ public class Robot extends TimedRobot {
       shooting_servo.setAngle(Constants.servo_shooting_angle);
     }
     if (buttonController.getRawButton(Constants.RAISE_INPUT_RAMP)) {
-      Input_Piston.set(DoubleSolenoid.Value.kReverse);
+      Input_Piston.set(DoubleSolenoid.Value.kForward);
     }
     if (controllers[0].getLeftTriggerAxis()>0) {
       Input_Motor.set(10);

@@ -50,11 +50,11 @@ public class AutoCommands {
 
     public void setServoRamp(String setting) {
         if (setting == "up") {
-            shooting_servo.set(Constants.servo_up_angle);
+            shooting_servo.setAngle(Constants.servo_up_angle);
         } else if (setting == "down") {
-            shooting_servo.set(Constants.servo_down_angle);
+            shooting_servo.setAngle(Constants.servo_down_angle);
         } else {
-            shooting_servo.set(Constants.servo_shooting_angle);
+            shooting_servo.setAngle(Constants.servo_shooting_angle);
         }
     }
 
