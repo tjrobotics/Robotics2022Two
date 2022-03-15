@@ -27,7 +27,7 @@ public final class Constants {
     public static final int pressureMax = 60;
 
     //ROBOT SPEED
-    public static final double robotSpeed = 0.5;
+    public static final double robotSpeed = 0.8;
    
     //ACCELERATION, > IS SLOWER ACCELERATION
     public static final int robotSpeedInterval = 20;

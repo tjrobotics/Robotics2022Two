@@ -44,7 +44,6 @@ public class Robot extends TimedRobot {
   PneumaticsModuleType ourType = PneumaticsModuleType.CTREPCM;
   Compressor compressor;
   DoubleSolenoid Shooting_Piston;
-  DoubleSolenoid Input_Piston;
 
   boolean driftMode = true;
 
@@ -97,7 +96,6 @@ public class Robot extends TimedRobot {
     //pnuematics
     compressor = new Compressor(0, ourType);
     Shooting_Piston = new DoubleSolenoid(ourType, 0,1);
-    Input_Piston = new DoubleSolenoid(ourType, 2,3);
 
     //making following commands for wheels
     Left_Back_Motor.follow(Left_Front_Motor);
@@ -115,7 +113,6 @@ public class Robot extends TimedRobot {
     Conveyer_Motor.restoreFactoryDefaults();
     
     //lower input piston
-    Input_Piston.set(DoubleSolenoid.Value.kForward);
 
     //making sure the compressor is on a loop
     //compressor.enableAnalog(Constants.pressureMin, Constants.pressureMax);
@@ -168,7 +165,6 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    Input_Piston.set(DoubleSolenoid.Value.kForward);
 
   }
 
@@ -178,6 +174,7 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    compressor.enableDigital();
     /*m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -185,16 +182,16 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.schedule();
     }*/
 
-    AutoCommands auto = new AutoCommands(Left_Front_Motor, Right_Front_Motor, Input_Motor, Conveyer_Motor, shooting_servo, Input_Piston, Shooting_Piston);
+    //AutoCommands auto = new AutoCommands(Left_Front_Motor, Right_Front_Motor, Input_Motor, Conveyer_Motor, shooting_servo, Input_Piston, Shooting_Piston);
 
     // At the beginning of auto
-    String autoName = SmartDashboard.getString("Auto Selector", "Drive"); // This would make "Drive Forwards the default auto
+    /*String autoName = SmartDashboard.getString("Auto Selector", "Drive"); // This would make "Drive Forwards the default auto
     switch(autoName) {
       case "Drive":
       auto.COMMANDdriving();
       case "Input":
         auto.COMMANDinputSystem();
-    }    
+    }    */
     
     /*shooting_servo.setAngle(Constants.servo_up_angle);
     Input_Piston.set(DoubleSolenoid.Value.kReverse);
@@ -245,7 +242,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-      System.out.println(compressor.getPressure());
+      //System.out.println(compressor.getPressure());
     
   }
 
@@ -343,9 +340,6 @@ public class Robot extends TimedRobot {
     if (buttonController.getRawButton(Constants.SERVO_SHOOTING)) {
       shooting_servo.setAngle(Constants.servo_shooting_angle);
     }
-    if (buttonController.getRawButton(Constants.RAISE_INPUT_RAMP)) {
-      Input_Piston.set(DoubleSolenoid.Value.kReverse);
-    }
     if (controllers[0].getLeftTriggerAxis()>0) {
       Input_Motor.set(10);
       Conveyer_Motor.set(15);
@@ -363,7 +357,7 @@ public class Robot extends TimedRobot {
   @Override
   public void testInit() {
     // Cancels all running commands at the start of test mode.
-    CommandScheduler.getInstance().cancelAll();
+    //CommandScheduler.getInstance().cancelAll();
   }
 
   /** This function is called periodically during test mode. */

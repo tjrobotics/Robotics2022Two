@@ -85,21 +85,24 @@ public class AutoCommands {
 
     //DRIVING SYSTEM AUTO COMMAND
     public void COMMANDdriving() {
-        driveStraight(-0.2, 0.8);
         raiseInputRamp();
-        Timer.delay(1);
-        setServoRamp("up");
-        runInput(4);
-        Timer.delay(0.5);
+        /*Timer.delay(10);
         setServoRamp("shooting");
         Timer.delay(0.5);
         shootPiston(true);
         Timer.delay(0.5);
         shootPiston(false);
         Timer.delay(0.5);
-        setServoRamp("up");
-        Timer.delay(1);
-        driveStraight(0.5, 1);
+        setServoRamp("up");*/
+        /*input_motor.set(10);
+        conveyor_motor.set(15);
+        driveStraight(0.5, 3);
+        driveStraight(-0.5, 3);
+        setServoRamp("shooting");
+        Timer.delay(0.5);
+        shootPiston(true);
+        Timer.delay(0.5);
+        shootPiston(false);*/
     }
 
 }
