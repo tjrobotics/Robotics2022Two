@@ -41,6 +41,7 @@ public class Robot extends TimedRobot {
   XboxController[] controllers;
 
   Servo shooting_servo;
+  Servo ramp_release_servo;
   PneumaticsModuleType ourType = PneumaticsModuleType.CTREPCM;
   Compressor compressor;
   DoubleSolenoid Shooting_Piston;
@@ -104,6 +105,7 @@ public class Robot extends TimedRobot {
 
     //servos
     shooting_servo = new Servo(0);
+    ramp_release_servo = new Servo(1);
 
     //restore all motors to normal behavior
     Left_Back_Motor.restoreFactoryDefaults();
@@ -114,7 +116,7 @@ public class Robot extends TimedRobot {
     Conveyer_Motor.restoreFactoryDefaults();
     
     //lower input piston
-
+    shooting_servo.setAngle(Constants.servo_up_angle);
     //making sure the compressor is on a loop
     //compressor.enableAnalog(Constants.pressureMin, Constants.pressureMax);
     
@@ -332,14 +334,22 @@ public class Robot extends TimedRobot {
         enablecompressor = true;
       }
     }
-    if (buttonController.getRawButton(Constants.SERVO_UP)) {
-      shooting_servo.setAngle(Constants.servo_up_angle);
+    if(buttonController.getRawButton(Constants.Start_Button)) {
+      ramp_release_servo.setAngle(Constants.ramp_hold_position);
     }
-    if (buttonController.getRawButton(Constants.SERVO_DOWN)) {
-      shooting_servo.setAngle(Constants.servo_down_angle);
+    if(buttonController.getRawButton(Constants.SWITCH_DRIVING_DIRECTION)) {
+      ramp_release_servo.setAngle(Constants.ramp_down_position);
     }
-    if (buttonController.getRawButton(Constants.SERVO_SHOOTING)) {
-      shooting_servo.setAngle(Constants.servo_shooting_angle);
+    if(ramp_release_servo.getAngle() == Constants.ramp_hold_position) {
+      if (buttonController.getRawButton(Constants.SERVO_UP)) {
+        shooting_servo.setAngle(Constants.servo_up_angle);
+      }
+      if (buttonController.getRawButton(Constants.SERVO_DOWN)) {
+        shooting_servo.setAngle(Constants.servo_down_angle);
+      }
+      if (buttonController.getRawButton(Constants.SERVO_SHOOTING)) {
+        shooting_servo.setAngle(Constants.servo_shooting_angle);
+      }
     }
     if (controllers[0].getLeftTriggerAxis()>0) {
       Input_Motor.set(10);
@@ -347,9 +357,6 @@ public class Robot extends TimedRobot {
     } else {
       Input_Motor.set(0);
       Conveyer_Motor.set(0);
-    }
-    if (controllers[0].getRawButton(Constants.SWITCH_DRIVING_DIRECTION)) {
-      robotFacingInput = !robotFacingInput;
     }
 
     }
