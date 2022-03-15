@@ -66,6 +66,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    
     //starts the camera server
     CameraServer.startAutomaticCapture(0);
     CameraServer.startAutomaticCapture(1);
@@ -188,7 +189,7 @@ public class Robot extends TimedRobot {
     /*String autoName = SmartDashboard.getString("Auto Selector", "Drive"); // This would make "Drive Forwards the default auto
     switch(autoName) {
       case "Drive":
-      auto.COMMANDdriving();
+        auto.COMMANDdriving();
       case "Input":
         auto.COMMANDinputSystem();
     }    */
@@ -312,7 +313,7 @@ public class Robot extends TimedRobot {
       Right_Back_Motor.setIdleMode(IdleMode.kBrake);
       Right_Front_Motor.setIdleMode(IdleMode.kBrake);
     }
-    System.out.println(compressor.getPressure());
+    //System.out.println(compressor.getPressure());
     if(compressor.getPressure()> Constants.pressureMax-1) {
       compressor.disable();
     }
