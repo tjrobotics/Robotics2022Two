@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -73,7 +74,7 @@ public class Robot extends TimedRobot {
     CameraServer.startAutomaticCapture(1);
 
     //sets options for automous
-    SmartDashboard.putStringArray("Auto List", new String[]{"Drive", "Input"});
+    SmartDashboard.putStringArray("Auto List", new String[]{"Nothing", "Ram", "Full"});
     
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
@@ -178,6 +179,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     compressor.enableDigital();
+    ramp_release_servo.setAngle(Constants.ramp_hold_position);
     /*m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -188,13 +190,28 @@ public class Robot extends TimedRobot {
     //AutoCommands auto = new AutoCommands(Left_Front_Motor, Right_Front_Motor, Input_Motor, Conveyer_Motor, shooting_servo, Input_Piston, Shooting_Piston);
 
     // At the beginning of auto
-    /*String autoName = SmartDashboard.getString("Auto Selector", "Drive"); // This would make "Drive Forwards the default auto
+    
+    
+    String autoName = SmartDashboard.getString("Auto Selector", "Ram"); // This would make "Drive Forwards the default auto
     switch(autoName) {
-      case "Drive":
-        auto.COMMANDdriving();
-      case "Input":
-        auto.COMMANDinputSystem();
-    }    */
+      case "Nothing":
+        //nothing
+      case "Ram":
+        Left_Front_Motor.set(-0.5);
+        Right_Front_Motor.set(-0.5);
+        Timer.delay(1);
+        Left_Front_Motor.set(0);
+        Right_Front_Motor.set(0);
+        Timer.delay(1);
+        Left_Front_Motor.set(0.8);
+        Right_Front_Motor.set(0.8);
+        Timer.delay(1);
+        Left_Front_Motor.set(0);
+        Right_Front_Motor.set(0);
+      case "Full":
+
+        
+    }    
     
     /*shooting_servo.setAngle(Constants.servo_up_angle);
     Input_Piston.set(DoubleSolenoid.Value.kReverse);
